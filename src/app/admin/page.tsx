@@ -87,6 +87,45 @@ async function Dashboard({ searchParams }: Pick<PageProps<"/admin">, "searchPara
         </div>
       </section>
 
+      <h2 className={styles.groupTitle}>인사이트 <span className={styles.mutedSmall}>전체 데이터 기준 · 요청마다 다시 계산 · 기간 필터 미적용</span></h2>
+      <div className={styles.insights}>
+        {d.insights.map((ins, i) => (
+          <article key={ins.id} className={styles.insight} aria-labelledby={`ins-${ins.id}`}>
+            <header className={styles.insightHead}>
+              <span className={styles.insightNo}>{i + 1}</span>
+              <h3 id={`ins-${ins.id}`} className={styles.insightTitle}>{ins.title}</h3>
+              <span className={ins.status === "action" ? styles.badgeAction : styles.badgeOk}>
+                {ins.status === "action" ? "! 조치 필요" : "✓ 양호"}
+              </span>
+            </header>
+            <div className={styles.insightStep}>
+              <p className={styles.stepLabel}>발견</p>
+              <p className={styles.finding}>{ins.finding}</p>
+            </div>
+            <div className={styles.insightStep}>
+              <p className={styles.stepLabel}>근거 데이터</p>
+              {ins.evidence.length > 0 && (
+                <dl className={styles.evidence}>
+                  {ins.evidence.map((e) => (
+                    <div key={e.label}>
+                      <dt>{e.label}</dt>
+                      <dd>{e.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+              <p className={styles.mutedSmall}>출처: {ins.evidenceNote}</p>
+            </div>
+            <div className={styles.insightStep}>
+              <p className={styles.stepLabel}>제안 액션</p>
+              <ul className={styles.actions}>
+                {ins.actions.map((a) => <li key={a}>{a}</li>)}
+              </ul>
+            </div>
+          </article>
+        ))}
+      </div>
+
       <h2 className={styles.groupTitle}>고객</h2>
       <div className={styles.row}>
         <section className={styles.card}>

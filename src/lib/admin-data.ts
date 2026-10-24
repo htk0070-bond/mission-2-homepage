@@ -2,6 +2,7 @@ import "server-only";
 import { supabaseAdmin } from "./supabase-admin";
 import { verifyAdmin } from "./admin-dal";
 import { UNIT_TYPES } from "./site";
+import { computeInsights, type Insight } from "./admin-insights";
 
 // 관리자 대시보드 집계. 요청마다 Supabase에서 새로 읽는다 (캐시 없음).
 // 금액은 DB와 같이 천원 단위로 계산하고 화면에서 억원·만원으로 바꾼다.
@@ -14,7 +15,7 @@ export const PERIODS: { key: Period; label: string }[] = [
 ];
 
 // 광고 채널 ↔ 고객 유입경로 확정 대응표 (2026-10-24). 나머지 채널은 연결하지 않는다.
-const AD_TO_LEAD: Record<string, string> = {
+export const AD_TO_LEAD: Record<string, string> = {
   블로그: "블로그",
   SNS광고: "SNS",
   포털검색광고: "광고(네이버)",
@@ -36,9 +37,14 @@ function todayKst() {
   return { y: get("year"), m: get("month"), d: get("day") };
 }
 
+export function todayString() {
+  const { y, m, d } = todayKst();
+  return `${y}-${pad(m)}-${pad(d)}`;
+}
+
 export function periodRange(period: Period): Range {
   const { y, m, d } = todayKst();
-  const today = `${y}-${pad(m)}-${pad(d)}`;
+  const today = todayString();
   if (period === "month") {
     return { start: `${y}-${pad(m)}-01`, end: today, label: "이번 달", caption: `${y}년 ${m}월 1일 ~ 오늘(${m}/${d})` };
   }
@@ -67,11 +73,11 @@ async function fetchAll<T>(table: string, columns: string): Promise<T[]> {
   return rows;
 }
 
-type Customer = { customer_id: string; grade: string | null; lead_source: string | null; signup_date: string | null };
-type Consultation = { customer_id: string; consult_date: string };
-type Contract = { customer_id: string; unit_id: string; contract_date: string; price_thousand_krw: number | null; status: string | null };
-type Unit = { unit_id: string; building: string; unit_type: string | null; status: string | null };
-type Ad = { spend_month: string; channel: string; cost_thousand_krw: number | null; leads: number | null };
+export type Customer = { customer_id: string; grade: string | null; lead_source: string | null; signup_date: string | null; interest_type: string | null };
+export type Consultation = { customer_id: string; consult_date: string; outcome: string | null; consultant: string | null };
+export type Contract = { customer_id: string; unit_id: string; contract_date: string; price_thousand_krw: number | null; status: string | null };
+export type Unit = { unit_id: string; building: string; unit_type: string | null; status: string | null; price_thousand_krw: number | null };
+export type Ad = { spend_month: string; channel: string; cost_thousand_krw: number | null; leads: number | null };
 type Inquiry = { created_at: string };
 
 export type Slice = { label: string; value: number };
@@ -94,6 +100,7 @@ export type Dashboard = {
   remaining: { buildings: string[]; types: string[]; cells: Record<string, number>; total: number };
   ads: { channel: string; cost: number; leads: number; contracts: number | null; costPerContract: number | null }[];
   adPeriod: string | null; // 광고 데이터가 있는 기간 (예: 2024-01 ~ 2025-12)
+  insights: Insight[]; // 전체 데이터 기준 (기간 필터 미적용)
 };
 
 const countBy = <T,>(rows: T[], key: (r: T) => string) => {
@@ -111,10 +118,10 @@ export async function getDashboard(period: Period): Promise<Dashboard> {
   const range = periodRange(period);
 
   const [customers, consultations, contracts, units, ads, inquiries] = await Promise.all([
-    fetchAll<Customer>("customers", "customer_id, grade, lead_source, signup_date"),
-    fetchAll<Consultation>("consultations", "customer_id, consult_date"),
+    fetchAll<Customer>("customers", "customer_id, grade, lead_source, signup_date, interest_type"),
+    fetchAll<Consultation>("consultations", "customer_id, consult_date, outcome, consultant"),
     fetchAll<Contract>("contracts", "customer_id, unit_id, contract_date, price_thousand_krw, status"),
-    fetchAll<Unit>("units", "unit_id, building, unit_type, status"),
+    fetchAll<Unit>("units", "unit_id, building, unit_type, status, price_thousand_krw"),
     fetchAll<Ad>("ad_spend", "spend_month, channel, cost_thousand_krw, leads"),
     fetchAll<Inquiry>("inquiries", "created_at"),
   ]);
@@ -227,5 +234,6 @@ export async function getDashboard(period: Period): Promise<Dashboard> {
     remaining: { buildings, types, cells, total: left.length },
     ads: adsOut,
     adPeriod: adMonths.size ? `${[...adMonths].sort()[0]} ~ ${[...adMonths].sort().at(-1)}` : null,
+    insights: computeInsights({ customers, consultations, contracts, units, ads, today: todayString() }),
   };
 }

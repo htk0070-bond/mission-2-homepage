@@ -518,6 +518,134 @@
   white-space: normal;
 }
 
+/* 인사이트: 발견 → 근거 데이터 → 제안 액션 */
+.insights {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.insight {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  min-width: 0;
+}
+
+.insightHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.insightNo {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: var(--bg-alt);
+  border: 1px solid var(--line);
+}
+
+.insightTitle {
+  font-size: 1rem;
+  flex: 1;
+}
+
+.badgeAction,
+.badgeOk {
+  flex: none;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+}
+
+.badgeAction {
+  color: #b54708;
+}
+
+.badgeOk {
+  color: #067647;
+}
+
+@media (prefers-color-scheme: dark) {
+  .badgeAction {
+    color: #fdb022;
+  }
+
+  .badgeOk {
+    color: #47cd89;
+  }
+}
+
+.insightStep {
+  display: grid;
+  gap: 6px;
+  padding-left: 12px;
+  border-left: 2px solid var(--line);
+}
+
+.stepLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.finding {
+  font-weight: 500;
+}
+
+.evidence {
+  display: grid;
+  gap: 4px;
+  font-size: 0.86rem;
+}
+
+.evidence div {
+  display: grid;
+  grid-template-columns: minmax(7em, 0.8fr) 1.6fr;
+  gap: 10px;
+}
+
+.evidence dt {
+  color: var(--muted);
+}
+
+.evidence dd {
+  font-variant-numeric: tabular-nums;
+}
+
+.actions {
+  padding-left: 1.1em;
+  display: grid;
+  gap: 4px;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 900px) {
+  .insights {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .evidence div {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
 /* 로그인 */
 .loginWrap {
   min-height: 100vh;
