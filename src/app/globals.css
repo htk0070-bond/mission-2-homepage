@@ -1,0 +1,60 @@
+:root {
+  --bg: #ffffff;
+  --bg-alt: #f4f6f3;
+  --fg: #1c2421;
+  --muted: #5d6b65;
+  --line: #dde3df;
+  --brand: #1f3a33;
+  --brand-fg: #ffffff;
+  --accent: #b8894a;
+  --error: #b42318;
+  --card: #ffffff;
+  --radius: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111614;
+    --bg-alt: #171e1b;
+    --fg: #e8ece9;
+    --muted: #9aa8a1;
+    --line: #2b3632;
+    --brand: #9cc7b6;
+    --brand-fg: #0f1a16;
+    --accent: #d8ad6d;
+    --error: #f97066;
+    --card: #1a2220;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 72px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans), system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  line-height: 1.6;
+  word-break: keep-all;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+  color: inherit;
+}

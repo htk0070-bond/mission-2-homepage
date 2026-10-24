@@ -1,0 +1,430 @@
+.inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+/* 헤더 */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+
+.header .inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  gap: 12px;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.05rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.brandNote {
+  margin-left: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 0.95rem;
+}
+
+.nav a {
+  text-decoration: none;
+  color: var(--muted);
+}
+
+.nav a:hover {
+  color: var(--fg);
+}
+
+.nav .navCta {
+  color: var(--brand-fg);
+  background: var(--brand);
+  padding: 7px 14px;
+  border-radius: 999px;
+}
+
+.nav .navCta:hover {
+  color: var(--brand-fg);
+}
+
+/* 히어로 */
+.hero {
+  padding: 88px 0 80px;
+  background:
+    radial-gradient(circle at 85% 20%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 45%),
+    linear-gradient(160deg, var(--bg-alt), var(--bg));
+  border-bottom: 1px solid var(--line);
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--accent);
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 3px 12px;
+  margin-bottom: 20px;
+}
+
+.heroTitle {
+  font-size: clamp(1.9rem, 5vw, 3rem);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  max-width: 16em;
+}
+
+.heroText {
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 34em;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.primaryBtn,
+.ghostBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 24px;
+  border-radius: var(--radius);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.primaryBtn {
+  background: var(--brand);
+  color: var(--brand-fg);
+}
+
+.ghostBtn {
+  border: 1px solid var(--line);
+  background: var(--card);
+}
+
+/* 공통 섹션 */
+.section {
+  padding: 72px 0;
+}
+
+.alt {
+  background: var(--bg-alt);
+}
+
+.sectionTitle {
+  font-size: 1.6rem;
+  letter-spacing: -0.01em;
+}
+
+.sectionLead {
+  margin-top: 8px;
+  color: var(--muted);
+}
+
+/* 단지 개요 */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.stat {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px;
+  background: var(--card);
+}
+
+.stat dt {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.stat dd {
+  margin-top: 6px;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+/* 타입 안내 */
+.types {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.typeCard {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.typeName {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--brand);
+}
+
+.typeArea {
+  font-weight: 500;
+}
+
+.typeNote {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.typeCount {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 0.9rem;
+}
+
+/* 상담 문의 */
+.inquiry {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.contact {
+  list-style: none;
+  margin-top: 24px;
+  display: grid;
+  gap: 10px;
+}
+
+.contact li {
+  display: flex;
+  gap: 16px;
+}
+
+.contact span {
+  width: 5.5em;
+  color: var(--muted);
+}
+
+.contact a {
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.formCard {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.05);
+}
+
+.form {
+  display: grid;
+  gap: 18px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field label {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.req {
+  margin-left: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible,
+.check input:focus-visible,
+.submit:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.field [aria-invalid="true"] {
+  border-color: var(--error);
+}
+
+.error,
+.formError {
+  color: var(--error);
+  font-size: 0.875rem;
+}
+
+.formError {
+  font-weight: 500;
+}
+
+.hp {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.privacy {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: grid;
+  gap: 8px;
+}
+
+.privacy legend {
+  padding: 0 6px;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.privacy dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 12px;
+  font-size: 0.875rem;
+}
+
+.privacy dt {
+  color: var(--muted);
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--brand);
+}
+
+.submit {
+  min-height: 52px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--brand);
+  color: var(--brand-fg);
+  font-weight: 700;
+  font-size: 1.05rem;
+  cursor: pointer;
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.done {
+  display: grid;
+  gap: 8px;
+  padding: 12px 0;
+}
+
+.doneTitle {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--brand);
+}
+
+/* 푸터 */
+.footer {
+  border-top: 1px solid var(--line);
+  padding: 32px 0 40px;
+  font-size: 0.9rem;
+}
+
+.footer .muted {
+  margin-top: 6px;
+}
+
+@media (max-width: 760px) {
+  .nav a:not(.navCta) {
+    display: none;
+  }
+
+  .hero {
+    padding: 56px 0 52px;
+  }
+
+  .section {
+    padding: 52px 0;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .inquiry {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .formCard {
+    padding: 20px 16px;
+  }
+
+  .inner {
+    padding: 0 16px;
+  }
+}
