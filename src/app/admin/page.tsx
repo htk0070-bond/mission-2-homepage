@@ -94,8 +94,8 @@ async function Dashboard({ searchParams }: Pick<PageProps<"/admin">, "searchPara
             <header className={styles.insightHead}>
               <span className={styles.insightNo}>{i + 1}</span>
               <h3 id={`ins-${ins.id}`} className={styles.insightTitle}>{ins.title}</h3>
-              <span className={ins.status === "action" ? styles.badgeAction : styles.badgeOk}>
-                {ins.status === "action" ? "! 조치 필요" : "✓ 양호"}
+              <span className={{ action: styles.badgeAction, discuss: styles.badgeDiscuss, ok: styles.badgeOk }[ins.status]}>
+                {{ action: "! 조치 필요", discuss: "? 협의 필요", ok: "✓ 양호" }[ins.status]}
               </span>
             </header>
             <div className={styles.insightStep}>

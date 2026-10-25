@@ -73,7 +73,14 @@ async function fetchAll<T>(table: string, columns: string): Promise<T[]> {
   return rows;
 }
 
-export type Customer = { customer_id: string; grade: string | null; lead_source: string | null; signup_date: string | null; interest_type: string | null };
+export type Customer = {
+  customer_id: string;
+  grade: string | null;
+  lead_source: string | null;
+  signup_date: string | null;
+  interest_type: string | null;
+  budget_thousand_krw: number | null;
+};
 export type Consultation = { customer_id: string; consult_date: string; outcome: string | null; consultant: string | null };
 export type Contract = { customer_id: string; unit_id: string; contract_date: string; price_thousand_krw: number | null; status: string | null };
 export type Unit = { unit_id: string; building: string; unit_type: string | null; status: string | null; price_thousand_krw: number | null };
@@ -118,7 +125,7 @@ export async function getDashboard(period: Period): Promise<Dashboard> {
   const range = periodRange(period);
 
   const [customers, consultations, contracts, units, ads, inquiries] = await Promise.all([
-    fetchAll<Customer>("customers", "customer_id, grade, lead_source, signup_date, interest_type"),
+    fetchAll<Customer>("customers", "customer_id, grade, lead_source, signup_date, interest_type, budget_thousand_krw"),
     fetchAll<Consultation>("consultations", "customer_id, consult_date, outcome, consultant"),
     fetchAll<Contract>("contracts", "customer_id, unit_id, contract_date, price_thousand_krw, status"),
     fetchAll<Unit>("units", "unit_id, building, unit_type, status, price_thousand_krw"),

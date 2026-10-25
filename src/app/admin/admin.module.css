@@ -561,6 +561,7 @@
 }
 
 .badgeAction,
+.badgeDiscuss,
 .badgeOk {
   flex: none;
   font-size: 0.75rem;
@@ -578,9 +579,17 @@
   color: #067647;
 }
 
+.badgeDiscuss {
+  color: #5925dc;
+}
+
 @media (prefers-color-scheme: dark) {
   .badgeAction {
     color: #fdb022;
+  }
+
+  .badgeDiscuss {
+    color: #bdb4fe;
   }
 
   .badgeOk {

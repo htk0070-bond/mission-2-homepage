@@ -8,7 +8,7 @@ export type InsightStat = { label: string; value: string };
 export type Insight = {
   id: string;
   title: string;
-  status: "action" | "ok";
+  status: "action" | "ok" | "discuss";
   finding: string;
   evidence: InsightStat[];
   evidenceNote: string;
@@ -39,7 +39,13 @@ type Input = { customers: Customer[]; consultations: Consultation[]; contracts: 
 export function computeInsights({ customers, consultations, contracts, units, ads, today }: Input): Insight[] {
   const live = contracts.filter((c) => c.status !== "해지");
   const contracted = new Set(live.map((c) => c.customer_id));
-  return [adBudget(customers, live, ads), hopeFollowUp(consultations, contracted, today), typeInventory(customers, units), unitStatusSync(units, contracts)];
+  return [
+    adBudget(customers, live, ads),
+    hopeFollowUp(consultations, contracted, today),
+    typeInventory(customers, units),
+    unitStatusSync(units, contracts),
+    gradeCriteria(customers, consultations, contracted),
+  ];
 }
 
 // ① 광고 예산: 연결된 채널의 계약 1건당 비용 비교 (광고 데이터가 있는 달의 계약만)
@@ -153,6 +159,57 @@ function typeInventory(customers: Customer[], units: Unit[]): Insight {
     actions: [
       `${slow.t} 관심 고객 ${fmt(slow.interested)}명에게 타입 안내와 견본 방문 초대를 보내고, 판매가 늦은 이유를 상담 메모로 확인합니다.`,
       `${most.t} 잔여 ${fmt(most.left)}세대는 예산이 맞는 고객군을 대상으로 한정 조건(옵션·납부 일정)을 검토합니다.`,
+    ],
+  };
+}
+
+// ⑤ 고객 등급 기준: 등급 순서가 계약률·예산 순서와 맞는지 (기준 재정의는 협의 안건)
+const RANKED_GRADES = ["vvip", "vip", "일반", "관심고객"]; // 높은 등급 → 낮은 등급. "신규"는 단계라 순위에서 뺀다
+const BUDGET_PLACEHOLDERS = new Set([-1, 9999990]); // 원본 -1·999999(만원)는 정상치로 두되 평균에서는 제외
+
+function gradeCriteria(customers: Customer[], consultations: Consultation[], contracted: Set<string>): Insight {
+  const consultCount = new Map<string, number>();
+  consultations.forEach((c) => consultCount.set(c.customer_id, (consultCount.get(c.customer_id) ?? 0) + 1));
+
+  const stats = [...RANKED_GRADES, "신규"].map((g) => {
+    const cs = customers.filter((c) => c.grade === g);
+    const won = cs.filter((c) => contracted.has(c.customer_id)).length;
+    const budgets = cs.map((c) => c.budget_thousand_krw).filter((b): b is number => b !== null && !BUDGET_PLACEHOLDERS.has(b));
+    return {
+      g,
+      n: cs.length,
+      won,
+      rate: cs.length ? won / cs.length : 0,
+      budget: budgets.length ? budgets.reduce((s, b) => s + b, 0) / budgets.length : 0,
+      consults: cs.length ? cs.reduce((s, c) => s + (consultCount.get(c.customer_id) ?? 0), 0) / cs.length : 0,
+    };
+  }).filter((s) => s.n > 0);
+
+  const ranked = stats.filter((s) => RANKED_GRADES.includes(s.g));
+  const descending = (vals: number[]) => vals.every((v, i) => i === 0 || vals[i - 1] >= v);
+  const rateOrdered = descending(ranked.map((s) => s.rate));
+  const budgetOrdered = descending(ranked.map((s) => s.budget));
+  const topRate = [...stats].sort((a, b) => b.rate - a.rate)[0];
+  const lowRate = [...stats].sort((a, b) => a.rate - b.rate)[0];
+  const lowBudget = [...stats].sort((a, b) => a.budget - b.budget)[0];
+
+  return {
+    id: "grade-criteria",
+    title: "고객 등급 기준 재정의",
+    status: rateOrdered && budgetOrdered ? "ok" : "discuss",
+    finding: rateOrdered && budgetOrdered
+      ? "등급이 높을수록 계약률과 예산도 높습니다. 현재 등급 기준이 실제 계약 가능성을 반영하고 있습니다."
+      : `등급 순서가 계약률·예산 순서와 맞지 않습니다. 계약률은 ${topRate.g} ${pct(topRate.won, topRate.n)}가 가장 높고 ${lowRate.g} ${pct(lowRate.won, lowRate.n)}가 가장 낮으며, 평균 예산은 ${josa(lowBudget.g, "이", "가")} 가장 낮습니다. 등급 부여 기준이 문서로 정해져 있지 않습니다.`,
+    evidence: stats.map((s) => ({
+      label: `${s.g} (${fmt(s.n)}명)`,
+      value: `계약률 ${pct(s.won, s.n)} · 평균 예산 ${eok(s.budget)} · 상담 ${s.consults.toFixed(1)}회`,
+    })),
+    evidenceNote: "고객 등급(원본 값, 표기만 통일) + 계약(해지 제외) + 상담 이력. 예산 -1·999999는 평균에서 제외, 예산 칸 의미(총액/자기자본)는 확인 전이라 확신도 낮음",
+    actions: [
+      "협의 안건 ① 등급을 두 축으로 분리: 계약 가능성(A~D, 상담사 체크리스트 점수)과 고객 가치(관심 타입 분양가로 자동 계산). \"신규\"는 등급이 아닌 첫 평가 전 상태로 표시.",
+      "협의 안건 ② 체크리스트 항목과 배점: 구매 시기 · 자금 준비(대출 사전심사) · 행동 신호(모델하우스 방문, 동·호 지정) · 결정권자 동반 (각 0~2점, A는 시기·자금 모두 2점 필수).",
+      "협의 안건 ③ 상담 기록에 체크 항목 칼럼을 추가하고, 3개월 운영 후 등급별 계약률이 A > B > C > D 순서인지 대시보드로 검증.",
+      "확정 전까지 기존 등급은 원본 칼럼으로 유지하고 새 등급과 나란히 비교합니다.",
     ],
   };
 }
